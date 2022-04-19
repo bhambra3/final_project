@@ -1,0 +1,236 @@
+---
+title: "What makes a good basketball player? How player heights and weights influence performance statistics in the NBA."
+author: "Nikhil Bhambra | Feb 20th, 2022"
+output: pdf_document
+---
+
+```{r, echo=FALSE}
+
+# Code used to make dataset.csv
+# all data sheets
+# perf <- read.csv('./performance.csv')
+# attr <- read.csv('./attributes.csv')
+
+# attr but just height/weight
+# attr_small <- select(attr, 'FULL.NAME', HEIGHT, WEIGHT)
+
+# join on name to get heights/weights
+# all <- merge(perf, attr_small, by="FULL.NAME")
+
+# drop NA, 613 values. Drop dups, 551 values.
+# all_sm <- na.omit(all)
+# final_dataset <- all_sm %>% distinct(FULL.NAME, .keep_all=TRUE)
+
+# output
+# write.csv(final_dataset, "./dataset.csv")
+
+# IMPORT DATASET.
+all_sm <- read.csv("./dataset.csv")
+```
+
+# Proposed Research Question
+
+- Which performance statistics in professional basketball are influenced by player height and weight? Are there significant linear relationships between in-game performance and physical stature across a population? 
+
+- For those statistics which do not have a clear linear association with height or weight on a population-level, are there any significant trends across or within distinct strata found in splits of another categorical variables such as position, team, or years of experience?
+
+# Background Information and Relevance
+
+The National Basketball Association only recruits elite basketball players from across the globe. As of this season (2021-2022), there are roughly 600 athletes playing on 30 teams spread across the United States of America. I'm interested in seeing how the physical makeup of the league influences player performance. In other words, does a players height or weight necessarily affect their scoring or defensive abilities relative to other players? NBA Teams value specific physical traits as well as in-game savvy when selecting recruits, and the height of players has steadily risen over the past decades (Curcic, 2017). Interestingly, current trends in the league indicate a decrease in priority for singularly tall players, while the average height for each position in the NBA has stayed significantly above 69 inches, the average height of a male in the USA (Fryer et al., 2021). I am interested to see if the current decreasing priority for tall players is reflected in a less-intense linear trend for height as it relates to other performance statistics. Figures below courtesy of Curcic, 2017 shows this trend over time.
+
+\
+
+![Average height of NBA Players by position over time](./new-avgheight.png)
+![Average weight of NBA Players by position over time](./new-avgweight.png)
+
+# Exploratory Data Analysis
+
+## Data Source and Description
+
+To begin, I sourced data from `nbastuffer.com` (www.nbastuffer.com, 2022) and `nba.com/stats` (NBA Statistics Team, 2022) which both maintain publicly accessible and frequently-updated stats for NBA player performance. Information on performance including points-per-game (PPG), usage in minutes, and compiled statistics standard in the sport such as effective-shooting percentage were found on `nbastuffer.com`. To investigate these performance metrics with respect to height and weight, I had to scrape the `nba.com/stats` website which maintains these attributes. I did so by intercepting the response JSON file which is sent to the user's browser to display player stats on the web page. I converted this JSON to a CSV, and joined this information with the `nbastuffer` info, based on player names. At this point, I removed rows with null values, and removed duplicate names caused by players switching teams mid-season. My population contains 551 observations representing distinct players active in the NBA this season. The data has the following columns:
+
+Column Name | Meaning
+----|----------------
+X    |    Unique Integer ID (1..557)
+Full Name     |    First and Last Name
+Height    | Height of the player in inches
+Weight    | Weight of the player in pounds
+Team    |   Current team
+Position    | Primary position
+Age    |  Age in years
+GP*    |   Games played
+MPG*    |  Minutes per game
+MIN*    |  Minutes played percentage
+USG*    |  Usage percentage
+TO*    |   Turnover rate 
+FTA*    |  Free-throws attempted
+FT*    |   Free-throws percentage
+X2PA*    | 2-point shot attempts
+X2P*    |  2-point percentage
+X3PA*    | 3-point shot attempts
+X3P*    |  3-point percentage
+eFG*    |  Effective Shooting Percentage
+TS*    |   True Shooting Percentage
+PPG*    | Points Per Game
+RPG*    | Rebounds Per Game
+TRB*    | Total Rebound Percentage
+APG*    | Assists per game
+AST*    | Assist percentage
+SPG*    | Steals per game
+BPG*    | Blocks per game
+TOP*    | Turnovers per game
+VI*    | "Versatility Rating"
+ORTG* | "Offensive Rating" Points produced per every 100 possessions
+DRTG*    | "Defensive Rating Points allowed by the player in head-ons per 100 possessions
+
+\newpage 
+
+I want to use Height and Weight as potential linear predictors to estimate the performance statistics. They're both normally distributed, which is important because I would like my predictor to be roughly normal as the sample size increases to ensure the assumptions of a linear model are satisfied.
+
+```{r, echo=FALSE, fig.cap="Distributions of stature measures across NBA players are Normal", fig.height=4, fig.width=8}
+par(mfrow=c(1,2))
+hist(all_sm$HEIGHT, main="Height (inches)", xlab="Frequency (n. players)")
+hist(all_sm$WEIGHT, main="Weight (pounds)", xlab="Frequency (n. players)")
+```
+
+Many of the performance statistics are either numeric ranges, or percentages where the range of values is distributed between 0 & 1. Of these variables, I performed exploration on the columns in the table with asterisks (*) next to their names. Each of these statistics measures a different aptitude which elite players are often evaluated on (for example, offensive statistics such as steals, points-per-game, and 3-shot percentage are significant predictors for Point Guard valuation). In examining all of these attributes against height and weight to evaluate if a trend exists, I was able to dismiss any potential estimators which do not exhibit a strong linear correlation with either height or weight. 
+
+For example, my first choice for performance indicator is PPG (points-per-game), but in this population there is no clear linear association between height or weight, which can be seen below. For these attributes, which include PPG or Turnovers for example, I plan to try and investigate if there are significant strata witin this attribute for which to associate with height/weight. It may yield interesting results if I control for a specific categorical factor (ex: only international players) to see how these trends vs. height and weight compare.
+
+```{r, echo=FALSE, fig.cap="Failed linear association: PPG", fig.height=4, fig.width=8}
+par(mfrow=c(1,2))
+a <- lm(all_sm$WEIGHT ~ all_sm$PPG)
+plot(all_sm$WEIGHT ~ all_sm$PPG, main="PPG vs. Weight", xlab="Weight (pounds)", ylab="PPG")
+abline(a, col="red")
+
+b <- lm(all_sm$HEIGHT ~ all_sm$PPG)
+plot(all_sm$HEIGHT ~ all_sm$PPG, main="PPG vs. Height", xlab="Height (inches)", ylab="PPG")
+abline(b, col="blue")
+```
+
+\newpage
+
+## Selected Variables and Potential Investigations
+
+After checking the relationships between all the performance variables w.r.t both weight and height, I believe the eight (8) factors below show potentially significant linear relationships with height or weight. While some of these scatterplots w.r.t height and weight have a random, cloud-like clustering of points towards the middling values, they all exhibit some positive or negative relationship which is significant at a population level. I will investigate these plots, as well as any relationships within the strata found within these variables if applicable. 
+
+- eFG: Effective Shooting Percentage
+- TS: True Shooting Percentage
+- X2P. - 2-point shooting percentage
+- X3P. - 3-point shooting percentage
+- BPG: Blocks per Game
+- SPG: Steals per Game
+- DRTG: Defensive Rating
+- ORTG: Offensive Rating
+
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: Effective Shooting Percentage", fig.height=5, fig.width=10}
+# eFG
+par(mfrow=c(1,2))
+c <- lm(all_sm$WEIGHT ~ all_sm$eFG.Effective.Shooting.PercentageWith.eFG...three.point.shots.made.are.worth.50..more.than.two.point.shots.made..eFG..Formula..FGM...0.5.x.3PM...FGA)
+plot(all_sm$WEIGHT ~ all_sm$eFG.Effective.Shooting.PercentageWith.eFG...three.point.shots.made.are.worth.50..more.than.two.point.shots.made..eFG..Formula..FGM...0.5.x.3PM...FGA, main="eFG vs. Weight", xlab="Weight (pounds)", ylab="eFG")
+abline(c, col="red")
+
+d <- lm(all_sm$HEIGHT ~ all_sm$eFG.Effective.Shooting.PercentageWith.eFG...three.point.shots.made.are.worth.50..more.than.two.point.shots.made..eFG..Formula..FGM...0.5.x.3PM...FGA)
+plot(all_sm$HEIGHT ~ all_sm$eFG.Effective.Shooting.PercentageWith.eFG...three.point.shots.made.are.worth.50..more.than.two.point.shots.made..eFG..Formula..FGM...0.5.x.3PM...FGA, main="eFG vs. Height", xlab="Height (inches)", ylab="eFG")
+abline(d, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: True Shooting Percentage", fig.height=5, fig.width=10}
+# TS
+par(mfrow=c(1,2))
+e <- lm(all_sm$WEIGHT ~ all_sm$TS.True.Shooting.PercentageTrue.shooting.percentage.is.a.measure.of.shooting.efficiency.that.takes.into.account.field.goals..3.point.field.goals..and.free.throws.)
+plot(all_sm$WEIGHT ~ all_sm$TS.True.Shooting.PercentageTrue.shooting.percentage.is.a.measure.of.shooting.efficiency.that.takes.into.account.field.goals..3.point.field.goals..and.free.throws., main="TS vs. Weight", xlab="Weight (pounds)", ylab="True Shooting Percentage")
+abline(e, col="red")
+
+f <- lm(all_sm$HEIGHT ~ all_sm$TS.True.Shooting.PercentageTrue.shooting.percentage.is.a.measure.of.shooting.efficiency.that.takes.into.account.field.goals..3.point.field.goals..and.free.throws.)
+plot(all_sm$HEIGHT ~ all_sm$TS.True.Shooting.PercentageTrue.shooting.percentage.is.a.measure.of.shooting.efficiency.that.takes.into.account.field.goals..3.point.field.goals..and.free.throws., main="eFG vs. Height", xlab="Height (inches)", ylab="True Shooting Percentage")
+abline(f, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: 2-point shooting percentage", fig.height=5, fig.width=10}
+# X2P
+par(mfrow=c(1,2))
+g <- lm(all_sm$WEIGHT ~ all_sm$X2P.)
+plot(all_sm$WEIGHT ~ all_sm$X2P., main="2P% vs. Weight", xlab="Weight (pounds)", ylab="2-point shooting percentage")
+abline(g, col="red")
+
+h <- lm(all_sm$HEIGHT ~ all_sm$X2P.)
+plot(all_sm$HEIGHT ~ all_sm$X2P., main="2P% vs. Height", xlab="Height (inches)", ylab="2-point shooting percentage")
+abline(h, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: 3-point shooting percentage", fig.height=5, fig.width=10}
+# X3P.
+par(mfrow=c(1,2))
+i <- lm(all_sm$WEIGHT ~ all_sm$X3P.)
+plot(all_sm$WEIGHT ~ all_sm$X3P., main="3P% vs. Weight", xlab="Weight (pounds)", ylab="2-point shooting percentage")
+abline(i, col="red")
+
+j <- lm(all_sm$HEIGHT ~ all_sm$X3P.)
+plot(all_sm$HEIGHT ~ all_sm$X3P., main="3P% vs. Height", xlab="Height (inches)", ylab="3-point shooting percentage")
+abline(j, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: Blocks per game", fig.height=5, fig.width=10}
+# BPG
+par(mfrow=c(1,2))
+k <- lm(all_sm$WEIGHT ~ all_sm$BPGBlocksBlocks.per.game.)
+plot(all_sm$WEIGHT ~ all_sm$BPGBlocksBlocks.per.game., main="BPG vs. Weight", xlab="Weight (pounds)", ylab="Blocks per game")
+abline(k, col="red")
+
+l <- lm(all_sm$HEIGHT ~ all_sm$BPGBlocksBlocks.per.game.)
+plot(all_sm$HEIGHT ~ all_sm$BPGBlocksBlocks.per.game., main="BPG vs. Height", xlab="Height (inches)", ylab="Blocks per game")
+abline(l, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: Steals per game", fig.height=5, fig.width=10}
+# SPG
+par(mfrow=c(1,2))
+x <- lm(all_sm$WEIGHT ~ all_sm$SPGStealsSteals.per.game.)
+plot(all_sm$WEIGHT ~ all_sm$SPGStealsSteals.per.game., main="BPG vs. Weight", xlab="Weight (pounds)", ylab="Blocks per game")
+abline(x, col="red")
+
+z <- lm(all_sm$HEIGHT ~ all_sm$SPGStealsSteals.per.game.)
+plot(all_sm$HEIGHT ~ all_sm$SPGStealsSteals.per.game., main="BPG vs. Weight", xlab="Weight (pounds)", ylab="Blocks per game")
+abline(z, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: Defensive rating", fig.height=5, fig.width=10}
+# DEFRTG
+par(mfrow=c(1,2))
+x <- lm(all_sm$WEIGHT ~ all_sm$DRTGDefensive.RatingIndividual.defensive.rating.estimates.how.many.points.the.player.allowed.per.100.possessions.he.individually.faced.while.staying.on.the.court.)
+plot(all_sm$WEIGHT ~ all_sm$DRTGDefensive.RatingIndividual.defensive.rating.estimates.how.many.points.the.player.allowed.per.100.possessions.he.individually.faced.while.staying.on.the.court., main="D.RTG vs. Weight", xlab="Weight (pounds)", ylab="Defensive rating")
+abline(x, col="red")
+
+z <- lm(all_sm$HEIGHT ~ all_sm$DRTGDefensive.RatingIndividual.defensive.rating.estimates.how.many.points.the.player.allowed.per.100.possessions.he.individually.faced.while.staying.on.the.court.)
+plot(all_sm$HEIGHT ~ all_sm$DRTGDefensive.RatingIndividual.defensive.rating.estimates.how.many.points.the.player.allowed.per.100.possessions.he.individually.faced.while.staying.on.the.court., main="D.RTG vs. Height", xlab="Height (inches)", ylab="Defensive rating")
+abline(z, col="blue")
+```
+
+```{r, echo=FALSE, fig.cap="Potential linear assoc: Offensive rating", fig.height=5, fig.width=10}
+# OFFRTG
+par(mfrow=c(1,2))
+x <- lm(all_sm$WEIGHT ~ all_sm$ORTGOffensive.RatingIndividual.offensive.rating.is.the.number.of.points.produced.by.a.player.per.100.total.individual.possessions.)
+plot(all_sm$WEIGHT ~ all_sm$ORTGOffensive.RatingIndividual.offensive.rating.is.the.number.of.points.produced.by.a.player.per.100.total.individual.possessions., main="O.RTG vs. Pounds", xlab="Weight (pounds)", ylab="Offensive rating")
+abline(x, col="red")
+
+z <- lm(all_sm$HEIGHT ~ all_sm$ORTGOffensive.RatingIndividual.offensive.rating.is.the.number.of.points.produced.by.a.player.per.100.total.individual.possessions.)
+plot(all_sm$HEIGHT ~ all_sm$ORTGOffensive.RatingIndividual.offensive.rating.is.the.number.of.points.produced.by.a.player.per.100.total.individual.possessions., main="D.RTG vs. Height", xlab="Height (inches)", ylab="Offensive rating")
+abline(z, col="blue")
+```
+
+\newpage
+## Discussion of Linear Regression Models
+
+I am trying to see if any of the performance based statistics which are standard in measuring players are associated with the player's height and weight. Traditionally, basketball has been a game dominated in the professional setting by taller players due to natural advantage it gives for shooting and defending. However these simple concepts do not always translate to in-game performance. In this case, all of the selected potential variables of interest show some population-wide linear trend with height and or weight. I will continue with this analysis, suplimenting it with context from the NBA to establish the significance of these trends within the context of game performance.
+
+# References
+
+Curcic, Dimitrije. “67 Years of Height Evolution in the NBA - In-Depth Research.” Athletic Shoe Reviews, RunRepeat.com, 2017, runrepeat.com/height-evolution-in-the-nba.
+
+Fryar CD, Carroll MD, Gu Q, Afful J, Ogden CL (January 2021). "Anthropometric Reference Data for Children and Adults: United States, 2015-2018" (PDF). Vital & Health Statistics. Series 3, Analytical and Epidemiological Studies. 11 (36): 1–44. PMID 33541517.
+
+NBA Statistics Team. “Players Bios.” NBA Stats, National Basketball Association, 18 Feb. 2022, www.nba.com/stats/players/bio/.
+
+“NBA Stats 2021/22: All Player Statistics in One Page.” Www.nbastuffer.com, nbastuffer, 20 Oct. 2021, www.nbastuffer.com/2021-2022-nba-player-stats/.
