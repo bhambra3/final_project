@@ -10,6 +10,7 @@ This repository contains the data and analysis code required to generate the rep
 
 ## File Structure
 - `README.md` &rarr; **You are here**
+- `final_paper.Rproj` &rarr; Configuration
 - `data/`
   - `final_dataset.csv` &rarr; **The analysis dataset**
   - `nbastuffer.csv` &rarr; Detailed statistics
@@ -17,5 +18,4 @@ This repository contains the data and analysis code required to generate the rep
 - `report/`
   - `final_paper.rmd` &rarr; **This project analysis**
   - `final_paper.pdf` &rarr; This project report
-  - `final_paper.Rproj` &rarr; Environment variables
   - `references.bib` &rarr; Citations
