@@ -1,8 +1,8 @@
-# What makes a good basketball player? 
+# What makes a successful professional basketball player? 
 *How player heights and weights influence performance statistics in the NBA*
 
 ## Overview
-This repository contains the data and analysis code required to generate the report <a href="https://github.com/bhambra3/final_project/blob/main/final_paper.pdf" target="_blank"> ⭐ What makes a good basketball player?</a>
+This repository contains the data and analysis code required to generate the report <a href="https://github.com/bhambra3/final_project/blob/main/final_paper.pdf" target="_blank"> ⭐ What makes a successful professional basketball player?</a>
 
 ## Run this repo
 1) Open `~/report/final_paper.rmd` in RStudio or another RMarkdown interpreter
