@@ -1,0 +1,98 @@
+---
+title: 'What makes a good professional basketball player?'
+subtitle: 'How player heights and weights influence performance statistics in the NBA'
+author: "Nikhil Bhambra"
+date: 'April 20th, 2022'
+output: 
+  pdf_document: 
+    number_sections: yes
+thanks: "Analysis repository available at https://github.com/bhambra3/final_project/"
+toc: true
+bibliography: references.bib
+---
+
+<!-- INSTALL LIBRARIES -->
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+# install libraries
+
+if(!require('tidyverse')) {install.packages('tidyverse') } else { library(tidyverse) }
+if(!require('here')) {install.packages('here') } else { library(here) }
+```
+
+<!-- DOWNLOAD DATASET FILES -->
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+dest_str_1 <- here("data", "nbastats.csv")
+nbastats_url <- "https://raw.githubusercontent.com/bhambra3/final_project/main/data/nbastats.csv"
+
+dest_str_2 <- here("data", "nbastuffer.csv")
+nbastuffer_url <- "https://raw.githubusercontent.com/bhambra3/final_project/main/data/nbastuffer.csv"
+
+# nba stats
+if(!file.exists(dest_str_1)) {
+ download.file(nbastats_url, dest_str_1, mode="wb") 
+}
+
+# nba stuffer
+if(!file.exists(dest_str_2)) {
+  download.file(nbastuffer_url, dest_str_2, mode="wb") 
+}
+```
+
+<!-- CREATE ANALYSIS DATASET -->
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+# Code used to make final useful dataset.csv
+
+# all data sheets
+perf <- read.csv("./data/nbastuffer.csv")
+attr <- read.csv("./data/nbastats.csv")
+
+# attr but just height/weight
+attr_small <- select(attr, 'FULL.NAME', HEIGHT, WEIGHT)
+
+# join on name to get heights/weights
+all <- merge(perf, attr_small, by="FULL.NAME")
+
+# drop NA, 613 values. Drop dups, 551 values.
+all_sm <- na.omit(all)
+final_dataset <- all_sm %>% distinct(FULL.NAME, .keep_all=TRUE)
+
+# output
+dest_str_3 = here("data", "final_dataset.csv")
+write.csv(final_dataset, dest_str_3)
+```
+
+\newpage
+
+# Introduction
+
+An intro
+\newpage
+
+# Data
+
+A description of the data
+\newpage
+
+## Data Preparation Methodology
+
+A description
+\newpage
+
+# Results
+
+A description
+\newpage
+
+
+# Discussion
+
+A description
+\newpage
+
+# References
+
+---
+nocite: |
+  @citeR
+---
+
