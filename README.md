@@ -5,8 +5,8 @@
 This repository contains the data and analysis code required to generate the report <a href="https://github.com/bhambra3/final_project/blob/main/final_paper.pdf" target="_blank"> ⭐ What makes a good basketball player?</a>
 
 ## Run this repo
-1) Open `paper.Rmd` in RStudio or another RMarkdown interpreter
-2) Run this analysis, which will generate the `paper.pdf` output
+1) Open `~/report/final_paper.rmd` in RStudio or another RMarkdown interpreter
+2) Run this analysis, which will generate the `~/reports/final_paper.pdf` output
 
 ## File Structure
 - `README.md` &rarr; **You are here**
