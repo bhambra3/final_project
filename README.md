@@ -11,7 +11,7 @@ This repository contains the data and analysis code required to generate the rep
 ## File Structure
 - `README.md` &rarr; **You are here**
 - `data/`
-  - `final_dataset` &rarr; The analysis dataset
+  - `final_dataset.csv` &rarr; The analysis dataset
   - `nbastuffer.csv` &rarr; Detailed statistics
   - `nbastats.csv` &rarr; Detailed player info
 - `paper.rmd` &rarr; This project analysis
