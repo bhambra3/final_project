@@ -15,7 +15,7 @@ This repository contains the data and analysis code required to generate the rep
   - `nbastuffer.csv` &rarr; Detailed statistics
   - `nbastats.csv` &rarr; Detailed player info
 - `report/`
-  - `paper.rmd` &rarr; **This project analysis**
-  - `paper.pdf` &rarr; This project report
-  - `paper.Rproj` &rarr; Environment variables
+  - `final_paper.rmd` &rarr; **This project analysis**
+  - `final_paper.pdf` &rarr; This project report
+  - `final_paper.Rproj` &rarr; Environment variables
   - `references.bib` &rarr; Citations
