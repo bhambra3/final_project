@@ -1,3 +1,5 @@
 All detail removed to avoid recognition by search engines. 
 
-Clone and run this repo from `~/report/final_paper.rmd`.
+Analysis R code not included to avoid any potential academic dishonesty. 
+
+View the final paper at `~/report/final_paper.pdf`. 
